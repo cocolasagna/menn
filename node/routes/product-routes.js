@@ -4,7 +4,7 @@ const authenticateToken= require('../middleware/authmiddleware')
 
 const ProductRouter = express.Router();
 
-ProductRouter.post('/postproduct', controls.postproduct);
-ProductRouter.get('/getproduct',authenticateToken, controls.getProduct);
+ProductRouter.post('/addproduct',authenticateToken ,  controls.postproduct);
+ProductRouter.get('/getproduct/:userid',authenticateToken, controls.getProduct);
 
 module.exports = ProductRouter;

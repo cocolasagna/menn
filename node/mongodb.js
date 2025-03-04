@@ -9,7 +9,10 @@ require('./config/passport');
 const app = express();
 app.use(cors(
   {origin: 'http://localhost:3000', 
-  credentials: true}
+  credentials: true,
+    allowedHeaders: 'Content-Type,Authorization'
+}
+  
 ))
 app.use(cookieParser())
 // Middleware to parse JSON bodies

@@ -6,7 +6,7 @@ const authenticateToken = require('../middleware/authmiddleware');
 const passport = require('passport');
 
 UserRouter.post('/signup', controls.signupUser);
-UserRouter.get('/getuser', authenticateToken, controls.getUser);
+UserRouter.get('/getuserdetail', authenticateToken, controls.getUserDetail);
 UserRouter.post('/login', controls.loginUser);
 
 // Google OAuth routes
