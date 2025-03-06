@@ -1,8 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Product = require('../model/product')
+
+
+
 const postproduct = async (req, res, next) => {
     try {
+        if(!req.body.productname){
+            return res.status(400).json({message: "Product name is required"})
+        }else if (!req.body.productprice){
+            return res.status(400).json({message: "Product price is required"})
+        }
+
+        
         const name = req.body.productname
         const price = req.body.productprice
 
@@ -23,9 +33,6 @@ const postproduct = async (req, res, next) => {
       // Ensure the userId from params is in the correct format (ObjectId)
       const userId = req.params.userid;
       
-      // Log the userId to ensure it's correct
-      console.log('User ID:', userId);
-      
       if (!userId) {
         return res.status(400).json({ message: "User ID is required." });
       }
@@ -44,4 +51,6 @@ const postproduct = async (req, res, next) => {
       res.status(500).json({ message: err.message });
     }
   };
+
+
 module.exports = {postproduct,getProduct}

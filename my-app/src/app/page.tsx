@@ -11,6 +11,8 @@ export default function Home() {
   const [productprice,setProductPrice] = useState(0)
   const [products,setProducts] = useState([])
   const [error,setError] = useState('')
+  const [producterror,setProductError] = useState('')
+  const [sendproducterror,setSendProductError] = useState('')
 
 
 
@@ -19,20 +21,26 @@ export default function Home() {
       .get("http://localhost:8000/user/getuserdetail", { withCredentials: true })
       .then((response) => {
         const user = response.data.user;
-        console.log(user);
+      
         setUserDetail(user);
-        console.log(user._id);
+       
         // Use the user ID to fetch products
         axios
           .get(`http://localhost:8000/product/getproduct/${user._id}`, {
             withCredentials: true,
           })
           .then((productResponse) => {
-            console.log(productResponse.data); // Log the products data
+            console.log(productResponse); // Log the products data
             setProducts(productResponse.data); // Assuming the response has products array
+            setProductError(error)
           })
           .catch((productError) => {
-            console.error("Error fetching products:", productError);
+           // console.error("Error fetching products:", productError);
+            if(productError ){
+              setProductError(productError.response.data.message)
+            }
+            
+           
           });
       })
       .catch((error) => {
@@ -46,9 +54,11 @@ export default function Home() {
 const handleSubmit = (e) => {
   e.preventDefault()
   try {
-   axios.post('http://localhost:8000/product/addproduct' ,{productname,productprice} ,{withCredentials:true}).then((response)=>{
-   
+  axios.post('http://localhost:8000/product/addproduct' ,{productname,productprice} ,{withCredentials:true}).then((response)=>{
+   console.log('res',response)
     window.location.href = '/'
+   }).catch((error)=>{
+    setSendProductError(error.response.data.message)
    })
      
     
@@ -79,7 +89,7 @@ const handleSubmit = (e) => {
               </li>
             ))
           ) : (
-            <p>No products available.</p>
+            <p>{producterror && producterror}</p>
           )}
       <br></br>
       Add product:
@@ -98,7 +108,9 @@ const handleSubmit = (e) => {
       onChange={(e) => setProductPrice(e.target.value)}
       />
       <button type="submit">Submit</button>
+     
     </form>   
+    <p>{sendproducterror && sendproducterror}</p>
     </div>
   
 

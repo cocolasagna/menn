@@ -100,7 +100,7 @@ const googleAuthCallback = async (req, res) => {
       maxAge: 3600000, // 1 hour
     });
 
-   /* res.status(200).json({
+  /* res.status(200).json({
       message: 'Authentication successful',
       user: {
         userId: user._id,
@@ -108,7 +108,7 @@ const googleAuthCallback = async (req, res) => {
         email: user.email,
       }
     });*/
-    res.status(200).redirect('http://localhost:3000/')
+   res.status(200).redirect('http://localhost:3000/')
     
   } catch (error) {
     console.error('Google Auth Error:', error);

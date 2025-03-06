@@ -4,9 +4,33 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
+const { createServer } = require('http')
+const {Server} = require('socket.io')
+
+
 require('./config/passport');
 
 const app = express();
+
+//socket server creation
+const server = createServer(app);
+const io = new Server(server,{
+  cors:{
+    origin:'http://localhost:3000',
+    credentials:true,
+    allowedHeaders:'Content-Type,Authorization'
+  }
+}
+
+
+)
+
+io.on('connection', (socket)=>{
+  console.log('user connected')
+  console.log('socket id', socket.id)
+})
+
+
 app.use(cors(
   {origin: 'http://localhost:3000', 
   credentials: true,
@@ -39,4 +63,9 @@ app.use('/user', Userrouter);
 app.use('/product', Productrouter)
 
 // Start the server on port 3000
-app.listen(8000, () => console.log('Server running on port 8000'));
+//app.listen(8000, () => console.log('Server running on port 8000'));
+
+//Socket io 
+server.listen(8000, ()=>{
+  console.log('Port running on port 8080')
+})
