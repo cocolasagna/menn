@@ -58,9 +58,11 @@ mongoose.connect(MONGO_URI, {
 // Mount the user router at '/user'
 const Userrouter = require('./routes/user-routes');
 const Productrouter = require('./routes/product-routes');
+const ChatRouter = require('./routes/chat-routes');
 
 app.use('/user', Userrouter);
 app.use('/product', Productrouter)
+app.use('/chat',ChatRouter)
 
 // Start the server on port 3000
 //app.listen(8000, () => console.log('Server running on port 8000'));

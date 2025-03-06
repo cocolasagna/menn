@@ -1,7 +1,10 @@
-import {Server} from 'socket.io'
 
-const io = new Server({
-    cors: {
-        origin: '*'
-    }
-})
+
+const getMessage = (req,res)=>{
+    socket.on('message',(data)=>{
+        console.log('response',data)
+    })
+}
+
+
+module.exports = {getMessage};
