@@ -17,4 +17,6 @@ UserRouter.get('/auth/google/callback',
   controls.googleAuthCallback
 );
 
+
+UserRouter.get('/getusers', authenticateToken, controls.getUsers)
 module.exports = UserRouter;

@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose'
+const mongoose =require('mongoose')
 
 const ChatSchema = new mongoose.Schema(
     {
@@ -8,7 +8,8 @@ const ChatSchema = new mongoose.Schema(
             required: true
         } , 
         isGroupChat:{
-                type:Boolean
+                type:Boolean,
+                default: false
         },
         members:{
             type:Array
@@ -17,10 +18,10 @@ const ChatSchema = new mongoose.Schema(
             type:String,
             default:"One on one chat"
         },
-        messages:{
+        messages:[{
             type:mongoose.Schema.Types.ObjectId,
             ref:'Message'
-        },
+        }],
        
         
         
@@ -28,5 +29,5 @@ const ChatSchema = new mongoose.Schema(
    {timestamps:true}
 )
 
-const Chat = mongoose.model('Chat', UserSchema);
+const Chat = mongoose.model('Chat', ChatSchema);
 module.exports = Chat;

@@ -116,4 +116,10 @@ const googleAuthCallback = async (req, res) => {
   }
 };
 
-module.exports = { signupUser, getUserDetail, loginUser, googleAuthCallback };
+
+const getUsers  = async(req,res)=>{
+      const users = await User.find()
+      return res.status(200).json(users)
+}
+
+module.exports = { signupUser, getUserDetail, loginUser, googleAuthCallback , getUsers };

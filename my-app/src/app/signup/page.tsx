@@ -39,7 +39,7 @@ try {
 
     return (
         <div>
-            <h1>Login Page</h1>
+            <h1>Signup Page</h1>
             {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSignup}>
                 Username:<input
