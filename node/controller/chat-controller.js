@@ -8,9 +8,9 @@ const Chat = require('../model/chat')
 const sendMessageToUser = async (req, res) => {
     const { targetuserid, message } = req.body;
     const userid = req.user.id
-    const chatid =  [userid, targetuserid].sort().join('_');
     try {
         const targetSocketId = getSocketId(targetuserid);
+        const senderSocketId = getSocketId(userid)
         if (!targetSocketId) {
             return res.status(404).json({ message: 'User not online' });
         }
@@ -27,6 +27,7 @@ const sendMessageToUser = async (req, res) => {
                 messages:[]
             })
             await newChat.save()
+            existingchat = newChat
         }
        
 
@@ -40,7 +41,8 @@ const sendMessageToUser = async (req, res) => {
         await newMessage.save();
         existingchat.messages.push(newMessage._id)
         await existingchat.save();
-
+     
+        getIo().to(senderSocketId).emit('newMessage', newMessage);
         getIo().to(targetSocketId).emit('newMessage', newMessage);
         
 
