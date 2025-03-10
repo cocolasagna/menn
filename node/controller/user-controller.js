@@ -33,10 +33,13 @@ const signupUser = async (req, res, next) => {
   }
 };
 
+
+//Detail of logged in user
 const getUserDetail = async (req, res, next) => {
   try {
     const currentUser = req.user.email
     const user = await User.findOne({ email: currentUser })
+   
     res.status(200).json({ success: true, user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -117,9 +120,20 @@ const googleAuthCallback = async (req, res) => {
 };
 
 
-const getUsers  = async(req,res)=>{
-      const users = await User.find()
-      return res.status(200).json(users)
-}
+const getUsers = async (req, res) => {
+  try {
+    // Fetch all users from the database
+    const allUsers = await User.find();
+    
+    // Filter out the current user (if that's your intent)
+    const users = allUsers.filter(user => user._id.toString() !== req.user.id);
+    
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 
 module.exports = { signupUser, getUserDetail, loginUser, googleAuthCallback , getUsers };

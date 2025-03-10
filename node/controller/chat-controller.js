@@ -11,9 +11,9 @@ const sendMessageToUser = async (req, res) => {
     try {
         const targetSocketId = getSocketId(targetuserid);
         const senderSocketId = getSocketId(userid);
-        if (!targetSocketId) {
-            return res.status(404).json({ message: 'User not online' });
-        }
+    //    if (!targetSocketId) {
+         //   return res.status(404).json({ message: 'User not online' });
+    //    }
 
         // Generate a unique chat ID for the two users
         var chatId = [userid, targetuserid].sort().join('_');

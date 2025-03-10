@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { useRouter} from "next/navigation";
 import axios from "axios";
+export default function testing(){
 
-export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
@@ -34,27 +34,37 @@ try {
     }
   
 
-    return (
-        <div>
-            <h1>Login Page</h1>
-            {error && <p className="text-red-500">{error}</p>}
-            <form onSubmit={handleLogin}>
-               Username: <input
-                    type="username"
-                    placeholder="username"
-                    value={username}
+return(
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className = 'w-full max-w-md p-6 border-4 border-gray-300 rounded-lg shadow-lg'>
+            <div className="mb-4 text-center pb-3 border-b-2">
+                <h1 className = "text-2xl font-semibold">Login</h1>
+            </div>
+            <form onSubmit={handleLogin} className="space-y-4 ">
+                <div>
+                    <label className="block font-medium">Username:</label>
+                    <input type= "text" placeholder="Username"  value={username }
                     onChange={(e) => setUsername(e.target.value)}
-                /><br></br>
-                Password:<input
-                    type="password"
-                    placeholder="Password"
+                    className = "w-full p-2 border rounded-md "  />
+
+                </div>
+                <div>
+                    <label className="block font-medium">Password:</label>
+                    <input type = "password" placeholder="Enter Password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                /><br></br>
-                <button type="submit">Login</button>
+                     className="w-full p-2 border rounded-md"  />
+                </div>
+               
+                    <button type = "submit" className= 'w-full p-2 text-white bg-blue-500 rounded-md hover:bg-blue-600'type="submit">Login</button>
+               
             </form>
+            <button onClick={handleGoogleLogin} className="w-full mt-3 p-2 text-white bg-red-500 rounded-md hover:bg-red-600">Login from Google</button>
 
-            <button onClick={handleGoogleLogin}>Login with google</button>
         </div>
-    )
+    </div>
+)
+
 }
+
+
