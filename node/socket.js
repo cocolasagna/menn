@@ -34,6 +34,7 @@ const initializeSocket = (server) => {
             
             // Optionally track the user with their socketId
             connectedUsers.set(socket.userId, socket.id);
+            //console.log('connected-users',connectedUsers)
 
             next();
         } catch (err) {
@@ -45,11 +46,26 @@ const initializeSocket = (server) => {
     io.on('connection', (socket) => {
         console.log(`User connected: ${socket.userId}`);
 
+        socket.on('joinRoom', (roomId)=>{
+            socket.join(roomId)
+            console.log(`User joined room: ${roomId}`)
+        })
+        
+        socket.on('typing', ({selectedUserId})=>{
+        
+            const targetSocketId = getSocketId(selectedUserId);           
+            io.to(targetSocketId).emit('typing' , {userId: socket.userId , typing:true} )
+        })
+
+      
+
         socket.on('disconnect', () => {
             console.log(`User disconnected: ${socket.userId}`);
             connectedUsers.delete(socket.userId); // Remove user from connected users map
         });
     });
+
+   
 };
 
 // Function to retrieve socketId based on userId

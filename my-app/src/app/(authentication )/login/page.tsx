@@ -35,8 +35,8 @@ try {
   
 
 return(
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className = 'w-full max-w-md p-6 border-4 border-gray-300 rounded-lg shadow-lg'>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-8">
+        <div className = 'w-full max-w-md p-6 border-4 bg-white border-gray-300  rounded-lg shadow-lg'>
             <div className="mb-4 text-center pb-3 border-b-2">
                 <h1 className = "text-2xl font-semibold">Login</h1>
             </div>

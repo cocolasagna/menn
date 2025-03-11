@@ -42,7 +42,7 @@ const getUserDetail = async (req, res, next) => {
    
     res.status(200).json({ success: true, user });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(401).json({ success: false, message: 'User not logged in' });
   }
 };
 
@@ -126,7 +126,7 @@ const getUsers = async (req, res) => {
     const allUsers = await User.find();
     
     // Filter out the current user (if that's your intent)
-    const users = allUsers.filter(user => user._id.toString() !== req.user.id);
+    const users = allUsers.filter(user => user._id.toString() !== req.user.id);       
     
     return res.status(200).json(users);
   } catch (error) {
