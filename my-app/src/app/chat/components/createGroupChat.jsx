@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-export function CreateGroupChat({users , setIsModalOpen}){
+export default function CreateGroupChat({users , setIsModalOpen}){
 
 
     

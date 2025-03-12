@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { io } from "socket.io-client";
 import axios from "axios";
 import { useUser } from "../context/context";
-import {CreateGroupChat} from './components/createGroupChat'
+import CreateGroupChat from './components/createGroupChat'
 
 export default function Chat() {
     const searchParams = useSearchParams();
@@ -300,7 +300,7 @@ export default function Chat() {
 
             {/* Group Creation Modal */}
             {isModalOpen && <CreateGroupChat users={users} setIsModalOpen={setIsModalOpen} />
-               
+
             }
         </div>
     );
