@@ -12,6 +12,8 @@ export default function Chat() {
     const chatid = searchParams.get("chatId");
     const groupid = searchParams.get("groupid"); // For group chats
 
+    //Search
+    const [searchTerm, setSearchTerm] = useState("");
     const [socket, setSocket] = useState(null);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
@@ -28,6 +30,9 @@ export default function Chat() {
     const [groupName, setGroupName] = useState("");
     const [selectedEmails, setSelectedEmails] = useState([]);
     const [groupChats, setGroupChats] = useState([]);
+
+
+
 
     // Fetch user details if not present
     useEffect(() => {
@@ -47,6 +52,7 @@ export default function Chat() {
                 })
                 .catch((error) => {
                     console.error("Error fetching user:", error);
+                    router.push('/login')
                 });
         }
     }, [userDetail, setUserDetail]);
@@ -112,7 +118,7 @@ export default function Chat() {
                   )
                   
                   if (res.data.chat && res.data.chat.messages) {
-                    console.log(res.data.chat)
+                  
                       setMessages(res.data.chat.messages);
                   }
               } else if (selectedUserId) {
@@ -179,18 +185,42 @@ export default function Chat() {
     };
 
 
+//Searching for Users and Groups 
+const filteredUsers = users.filter(user => 
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  const filteredGroups = groupChats.filter(groupChats =>
+    groupChats.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
+
 
     return (
+
         <div className="flex h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-8">
+
             {/* User List */}
             <div className="w-1/3 bg-gray-200 p-4 overflow-y-auto">
+          
                 <h2 className="text-xl font-bold mb-3">
                     Welcome, {userDetail ? userDetail.name : "Loading..."}
                 </h2>
+
+                <input
+               
+          type="text"
+          placeholder="Search users or groups..."
+          className="w-full p-2 rounded-lg border-2 border-black mb-4"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
                 <h2 className="text-xl font-bold mb-3">Users:</h2>
-                {users.length > 0 ? (
+                {filteredUsers.length > 0 ? (
                     <ul className="space-y-2">
-                        {users.map((user) => (
+                        {filteredUsers.map((user) => (
                             <li 
                                 key={user._id} 
                                 onClick={() => {
@@ -210,21 +240,21 @@ export default function Chat() {
                     <p>No users found</p>
                 )}
 
-                <div className="flex space-x-1 justify-around pt-4">
+                <div className="flex space-x-1 justify-between pt-4">
                 <h2 className="text-xl font-bold mb-3">Groups:</h2>
                 <div className="pb-5">
                 <button 
-                    className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600" 
+                    className="ml-2 px-4 py-2 bg-amber-300 text-white rounded-md hover:bg-amber-400" 
                     onClick={() => setIsModalOpen(true)}
                 >
-                    Create Group
+                    +
                 </button>
                 </div>
                 </div>
 
-                {groupChats.length > 0 ? (
+                {filteredGroups.length > 0 ? (
                     <ul className="space-y-2">
-                        {groupChats.map((group) => (
+                        {filteredGroups.map((group) => (
                             <li 
                                 key={group._id} 
                                 onClick={() => handleViewGroup(group._id)}

@@ -144,7 +144,7 @@ const getGroupChats = async(req,res)=>{
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
         }
-        console.log('groupchats',group)
+       
         res.status(200).json(group);
         
     } catch (error) {

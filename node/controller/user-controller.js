@@ -46,6 +46,8 @@ const getUserDetail = async (req, res, next) => {
   }
 };
 
+//Login User
+
 const loginUser = async (req, res, next) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -65,7 +67,7 @@ const loginUser = async (req, res, next) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Strict',
-      maxAge: 3600000
+      maxAge: 360000000
     });
     res.status(200).json({ success: true, message: 'Logged in successfully'});
   } catch (e) {
@@ -73,6 +75,9 @@ const loginUser = async (req, res, next) => {
   }
 };
 
+
+
+//Google Auth Callback
 const googleAuthCallback = async (req, res) => {
   try {
     // req.user should be the filtered object: { googleId, email, name }
@@ -100,7 +105,7 @@ const googleAuthCallback = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Strict',
-      maxAge: 3600000, // 1 hour
+      maxAge: 360000000, // 1 hour
     });
 
   /* res.status(200).json({
