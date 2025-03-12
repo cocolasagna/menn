@@ -8,7 +8,7 @@ ChatRouter.get('/getusermessage/:targetuserid' , authenticateToken,controls.getM
 ChatRouter.post('/creategroupchat', authenticateToken, controls.createGroupChat)
 ChatRouter.get('/getgroupchats',authenticateToken,controls.getGroupChats)
 ChatRouter.get('/getgroupmessage/:groupId',authenticateToken, controls.getMessageforGroup)
-ChatRouter.post('/sendmessageingroup',authenticateToken, controls.sendMessageToGroup)
+ChatRouter.post('/sendgroupmessage',authenticateToken, controls.sendMessageToGroup)
 
 module.exports = ChatRouter
 

@@ -46,13 +46,14 @@ const initializeSocket = (server) => {
     io.on('connection', (socket) => {
         console.log(`User connected: ${socket.userId}`);
 
-        socket.on('joinRoom', (roomId)=>{
-            socket.join(roomId)
-            console.log(`User joined room: ${roomId}`)
+        socket.on('joinRoom', (groupId)=>{
+            socket.join(groupId)
+            console.log(`User joined room: ${groupId}`)
         })
         
-        socket.on('typing', ({selectedUserId})=>{
+
         
+        socket.on('typing', ({selectedUserId})=>{
             const targetSocketId = getSocketId(selectedUserId);           
             io.to(targetSocketId).emit('typing' , {userId: socket.userId , typing:true} )
         })

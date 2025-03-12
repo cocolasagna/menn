@@ -1,6 +1,7 @@
 // chatController.js
 
 const { getSocketId, getIo } = require('../socket'); // Import socket helper
+const mongoose = require('mongoose');
 const Message = require('../model/message'); // Import your message model
 const Chat = require('../model/chat')
 const User = require('../model/user')
@@ -69,18 +70,18 @@ const getMessageforUser = async (req, res) => {
         const userId = req.user.id;
         const targetuserid = req.params.targetuserid;
 
-        // Ensure both userId and targetuserid are provided
+    
         if (!userId || !targetuserid) {
             return res.status(400).json({ message: 'User ID or Target User ID is missing' });
         }
         var chatId = [userId, targetuserid].sort().join('_');
 
-        // Find the chat with both users
+
         const chat = await Chat.findOne({
            chatId
         }).populate({
             path: 'messages',
-            select: 'text sender createdAt'  // Populate sender and createdAt for frontend use
+            select: 'text sender createdAt'  
         });
 
         if (!chat) {
@@ -129,11 +130,15 @@ const createGroupChat = async (req, res) => {
 };
 
 
+
+
+//Get Group Chats
+
 const getGroupChats = async(req,res)=>{
     try {
         const group = await Chat.find({
             isGroupChat: true,
-            members: { $in: [req.user.id] }  // Check if the user's id is in the members array
+            members: { $in: [req.user.id] }  
         });
         
         if (!group) {
@@ -150,46 +155,35 @@ const getGroupChats = async(req,res)=>{
 
 
 
-
-
-
+//Send Message to group
 
 const sendMessageToGroup = async (req, res) => {
     const { groupId, message } = req.body;
     const userid = req.user.id;
 
-   // const targetSocketId = getSocketId(targetuserid);
-   // const senderSocketId = getSocketId(userid);
 
     try {
        
-    //    if (!targetSocketId) {
-         //   return res.status(404).json({ message: 'User not online' });
-    //    }
 
-        // Generate a unique chat ID for the two users
-       
 
         // Check if the chat exists
-        let existingchat = await Chat.findById({ groupId });
+        console.log('group',groupId)
+        const groupObjectId = new mongoose.Types.ObjectId(groupId);
+        let existingchat = await Chat.findById(groupObjectId);
 
         // Create a new message
         const newMessage = new Message({
             text: message,
             chat: existingchat._id,
-            sender: req.user.id,
+            sender: userid,
         });
         await newMessage.save();
 
         // Add message to the chat
         existingchat.messages.push(newMessage._id);
         await existingchat.save();
-
-
-        // Emit new message event to both sender and receiver
         
-        //getIo().to(senderSocketId).emit('newMessage', newMessage);
-       // getIo().to(targetSocketId).emit('newMessage', newMessage);
+        getIo().to(groupId).emit('newMessage', newMessage);
 
         return res.status(200).json(newMessage);
     } catch (error) {
@@ -202,20 +196,18 @@ const sendMessageToGroup = async (req, res) => {
 const getMessageforGroup = async (req, res) => {
     try {
         const userId = req.user.id;
-        //const targetuserid = req.params.targetuserid;
-        const groudId = req.params.groupId;
+        const groupId = req.params.groupId;  // Correctly extract groupId from req.params
 
-
-        // Ensure both userId and targetuserid are provided
+        // Ensure both userId and groupId are provided
         if (!userId || !groupId) {
             return res.status(400).json({ message: 'User ID or GroupId is missing' });
         }
-        
 
-        // Find the chat with both users
-        const chat = await Chat.findById({
-           groupId
-        }).populate({
+        // Convert groupId into an ObjectId instance
+        const groupObjectId = new mongoose.Types.ObjectId(groupId);
+
+        // Find the chat with the groupId
+        const chat = await Chat.findById(groupObjectId).populate({
             path: 'messages',
             select: 'text sender createdAt'  // Populate sender and createdAt for frontend use
         });
@@ -224,12 +216,13 @@ const getMessageforGroup = async (req, res) => {
             return res.status(404).json({ message: 'Chat not found' });
         }
 
-        res.status(200).json({chat});
+        res.status(200).json({ chat });
     } catch (error) {
         console.error('Error fetching messages:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 
 
 
