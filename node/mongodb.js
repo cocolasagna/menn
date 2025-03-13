@@ -6,10 +6,14 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const { createServer } = require('http');
 const { initializeSocket } = require('./socket');
+const multer = require('multer')
 
 require('./config/passport');
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'))
+
 const server = createServer(app);
 
 initializeSocket(server); // Initialize Socket.IO
@@ -45,5 +49,11 @@ app.use('/chat', ChatRouter);
 server.listen(8000, () => {
     console.log('Server running on port 8000');
 });
+
+
+//Multer Storage:
+
+
+
 
 module.exports = { app, server };

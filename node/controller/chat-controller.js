@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const Message = require('../model/message'); // Import your message model
 const Chat = require('../model/chat')
 const User = require('../model/user')
+const multer = require('multer')
 
 
 
@@ -225,6 +226,29 @@ const getMessageforGroup = async (req, res) => {
 
 
 
+//Multer File Storage
+
+const storage = multer.diskStorage({
+    destination:function(req,res,cb){
+        cb(null, 'public/uploads')
+    },
+    filename:function(req,res,cb){
+        cb(null, Date.now() + '-' + res.originalname)
+
+    }
+})
+
+
+
+
+//const upload = multer({storage:storage})
+
+const uploadfile = (req,res)=>{
+    console.log(`successfully uploaded:${req.files}`)
+}
+
+
+
 
 // Export the function
-module.exports = { sendMessageToUser , getMessageforUser  , createGroupChat , getGroupChats , sendMessageToGroup, getMessageforGroup};
+module.exports = { sendMessageToUser , getMessageforUser  , createGroupChat , getGroupChats , sendMessageToGroup, getMessageforGroup , uploadfile , storage}  ;

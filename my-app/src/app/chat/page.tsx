@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState  } from "react";
 import { useSearchParams, useRouter } from "next/navigation"; 
 import { io } from "socket.io-client";
 import axios from "axios";
@@ -31,6 +31,7 @@ export default function Chat() {
     const [selectedEmails, setSelectedEmails] = useState([]);
     const [groupChats, setGroupChats] = useState([]);
 
+    const [files, setFiles] = useState([]);
 
 
 
@@ -90,6 +91,8 @@ export default function Chat() {
             socket.emit('join', userDetail._id);
         }
     }, [userDetail, socket]);
+
+
 
     // Fetch users and Groups
     useEffect(() => {
@@ -195,7 +198,37 @@ const filteredUsers = users.filter(user =>
   );
 
 
+//File Uploads
 
+const handleFileChange = (e) => {
+    setFiles(e.target.files); // Stores selected files
+  };
+
+  const handleSubmitFile = async (e) => {
+    e.preventDefault();
+    if (files.length === 0) {
+      console.log("No files selected");
+      return;
+    }
+
+    const form = new FormData();
+
+    for (let i = 0; i < files.length; i++) {
+      form.append("files", files[i]); 
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/chat/uploadfile",
+        form,
+        { withCredentials: true, headers: { "Content-Type": "multipart/form-data" } }
+      );
+      console.log("Upload success:", response.data);
+      setFiles([])
+    } catch (error) {
+      console.error("Upload error:", error);
+    }
+}
 
     return (
 
@@ -315,6 +348,10 @@ const filteredUsers = users.filter(user =>
                                 className="w-full p-2 border border-gray-300 rounded-l-lg"
                                 placeholder="Type your message..."
                             />
+                            <input>
+                            
+                            </input>
+
                             <button 
                                 type="submit"
                                 className="px-4 py-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600"
@@ -322,6 +359,12 @@ const filteredUsers = users.filter(user =>
                                 Send
                             </button>
                         </form>
+                        <form onSubmit = {handleSubmitFile }>
+                            <input type="file" multiple onChange={handleFileChange}  />
+                            <button type="submit">Send File</button>
+
+                        </form>
+
                     </div>
                 ) : (
                     <p>Select a user or group to start chatting</p>
