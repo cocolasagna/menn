@@ -13,11 +13,8 @@ const sendMessageToUser = async (req, res) => {
     const { targetuserid, message } = req.body;
     const userid = req.user.id;
 
-    const targetSocketId = getSocketId(targetuserid);
-    const senderSocketId = getSocketId(userid);
-
     try {
-       
+        const targetSocketId = getSocketId(targetuserid);
     //    if (!targetSocketId) {
          //   return res.status(404).json({ message: 'User not online' });
     //    }
@@ -55,8 +52,13 @@ const sendMessageToUser = async (req, res) => {
 
         // Emit new message event to both sender and receiver
         
-        getIo().to(senderSocketId).emit('newMessage', newMessage);
-        getIo().to(targetSocketId).emit('newMessage', newMessage);
+       getIo().to(chatId).emit('newMessage', newMessage);
+
+
+        //Notifications
+        const newNotifications = `${userid} sent a message`
+
+       getIo().to(targetSocketId).emit('newNotifications', newNotifications)
 
         return res.status(200).json(newMessage);
     } catch (error) {
@@ -88,8 +90,9 @@ const getMessageforUser = async (req, res) => {
         if (!chat) {
             return res.status(404).json({ message: 'Chat not found' });
         }
-
+       
         res.status(200).json({chat});
+
     } catch (error) {
         console.error('Error fetching messages:', error);
         res.status(500).json({ message: 'Internal Server Error' });

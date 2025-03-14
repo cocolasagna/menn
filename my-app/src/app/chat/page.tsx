@@ -5,6 +5,11 @@ import { io } from "socket.io-client";
 import axios from "axios";
 import { useUser } from "../context/context";
 import CreateGroupChat from './components/createGroupChat'
+import { useDispatch, useSelector } from "react-redux";
+import { setMessages,addMessages , clearMessages } from "../store/slices/chatSlice";
+import { addNotifications , clearNotifications , setNotifications } from "../store/slices/notificationSlice";
+
+
 
 export default function Chat() {
     const searchParams = useSearchParams();
@@ -16,7 +21,8 @@ export default function Chat() {
     const [searchTerm, setSearchTerm] = useState("");
     const [socket, setSocket] = useState(null);
     const [message, setMessage] = useState("");
-    const [messages, setMessages] = useState([]);
+   
+    const dispatch = useDispatch();
     const [users, setUsers] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState(chatid || null);
     const [selectedGroupId, setSelectedGroupId] = useState(groupid || null); // Track selected group
@@ -24,12 +30,21 @@ export default function Chat() {
     const [typing, setTyping] = useState(false);
     const [usertyping, setUserTyping] = useState('');
     const [roomId, setRoomId] = useState('');
-    const { userDetail, setUserDetail } = useUser(); 
+    const { userDetail, setUserDetail } = useUser() 
+    const [previousTargetUserId, setPreviousTargetUserId] = useState(null);
+
+
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [groupName, setGroupName] = useState("");
     const [selectedEmails, setSelectedEmails] = useState([]);
     const [groupChats, setGroupChats] = useState([]);
+    
+
+
+    //Reducers
+    const messages = useSelector((state) => state.chat.messages);
+    const notifications = useSelector((state)=>state.notifications.notifications)
 
     const [files, setFiles] = useState([]);
 
@@ -53,7 +68,7 @@ export default function Chat() {
                 })
                 .catch((error) => {
                     console.error("Error fetching user:", error);
-                    router.push('/login')
+                   // router.push('/login')
                 });
         }
     }, [userDetail, setUserDetail]);
@@ -70,8 +85,14 @@ export default function Chat() {
         });
 
         newSocket.on("newMessage", (newMessage) => {
-            setMessages((prev) => [...prev, newMessage]); // Update UI instantly
+
+            //setMessages((prev) => [...prev, newMessage]); // Update UI instantly
+            dispatch(addMessages(newMessage))
         });
+
+        newSocket.on('newNotifications', (newNotifications)=>{
+            dispatch(addNotifications(newNotifications))
+        })
 
         newSocket.on('typing', (data) => {
             setTyping(data.typing);
@@ -111,7 +132,7 @@ export default function Chat() {
     // Fetch messages for group or individual chat
     useEffect(() => {
       const fetchMessages = async () => {
-          setMessages([]); 
+        dispatch(clearMessages());
           try {
               let res;
               if (selectedGroupId) {
@@ -122,7 +143,8 @@ export default function Chat() {
                   
                   if (res.data.chat && res.data.chat.messages) {
                   
-                      setMessages(res.data.chat.messages);
+                      //setMessages(res.data.chat.messages);
+                      dispatch(setMessages(res.data.chat.messages))
                   }
               } else if (selectedUserId) {
                   console.log("Selected User ID:", selectedUserId);
@@ -131,7 +153,8 @@ export default function Chat() {
                       { withCredentials: true }
                   );
                   if (res.data.chat && res.data.chat.messages) {
-                      setMessages(res.data.chat.messages);
+                      //setMessages(res.data.chat.messages);
+                      dispatch(setMessages(res.data.chat.messages))
                   }
               }
           } catch (err) {
@@ -182,9 +205,22 @@ export default function Chat() {
     const handleViewGroup = async (groupId) => {
         router.push(`/chat?groupid=${groupId}`)
         setSelectedGroupId(groupId);
-        socket.emit('joinRoom' , groupId)
+        socket.emit('joinGroupRoom' , groupId)
         setSelectedUserId(null);
-        setMessages([]);
+        dispatch(clearMessages())
+    };
+
+
+    const handleViewPrivate = async (targetUserId) => {
+        if (targetUserId !== previousTargetUserId) { // Only clear messages when ID changes
+            dispatch(clearMessages());
+            setPreviousTargetUserId(targetUserId);
+        }
+    
+        router.push(`/chat?chatId=${targetUserId}`);
+        setSelectedGroupId(null);
+        socket.emit("joinPrivateRoom", { targetUserId, userId: userDetail.id });
+        setSelectedUserId(targetUserId);
     };
 
 
@@ -256,11 +292,7 @@ const handleFileChange = (e) => {
                         {filteredUsers.map((user) => (
                             <li 
                                 key={user._id} 
-                                onClick={() => {
-                                    router.push(`/chat?chatId=${user._id}`)
-                                    setSelectedGroupId(null);
-                                    setSelectedUserId(user._id);
-                                }}
+                                onClick={ ()=>handleViewPrivate(user._id)}
                                 className={`p-3 cursor-pointer rounded-lg ${
                                     selectedUserId === user._id ? "bg-blue-500 text-white" : "bg-white"
                                 }`}
@@ -302,6 +334,12 @@ const handleFileChange = (e) => {
                 ) : (
                     <p>No groups found</p>
                 )}
+
+                <div>
+                    Notifications:
+                    {notifications && notifications.length > 0 ?(<h1>HI</h1>):(<h2>Bye</h2>) }
+                </div>
+            
             </div>
 
             {/* Chat Box */}

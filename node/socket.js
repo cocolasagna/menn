@@ -1,3 +1,4 @@
+const redis = require('./RedisClient');
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 
@@ -15,7 +16,7 @@ const initializeSocket = (server) => {
     });
 
     // Use middleware to authenticate socket connection
-    io.use((socket, next) => {
+    io.use(async(socket, next) => {
         const token = socket.handshake.headers.cookie
             ?.split('; ')
             .find(row => row.startsWith('token='))
@@ -34,7 +35,7 @@ const initializeSocket = (server) => {
             
             // Optionally track the user with their socketId
             connectedUsers.set(socket.userId, socket.id);
-            //console.log('connected-users',connectedUsers)
+           // console.log('connected-users',connectedUsers)
 
             next();
         } catch (err) {
@@ -46,13 +47,30 @@ const initializeSocket = (server) => {
     io.on('connection', (socket) => {
         console.log(`User connected: ${socket.userId}`);
 
-        socket.on('joinRoom', (groupId)=>{
+
+
+        socket.on('joinPrivateRoom' , (target)=>{
+            const targetUserId  = target.targetUserId
+            const userId = target.userId
+            const chatId = [targetUserId , userId].sort().join('_')
+            socket.join(chatId)
+            console.log(`User joined Private room: ${chatId}`)
+
+        })
+
+        socket.on('joinGroupRoom', (groupId)=>{
             socket.join(groupId)
             console.log(`User joined room: ${groupId}`)
         })
         
 
-        
+       /* socket.on('userConnected',async(userId)=>{
+            await redis.hset('OnlineUsers',userId,socket.id)
+            console.log(`User connected:${userId}`)
+
+        })*/
+
+
         socket.on('typing', ({selectedUserId})=>{
             const targetSocketId = getSocketId(selectedUserId);           
             io.to(targetSocketId).emit('typing' , {userId: socket.userId , typing:true} )
@@ -60,13 +78,13 @@ const initializeSocket = (server) => {
 
       
 
-        socket.on('disconnect', () => {
+        socket.on('disconnect', async() => {
+           // await redis.hdel("onlineUsers", userId);
             console.log(`User disconnected: ${socket.userId}`);
             connectedUsers.delete(socket.userId); // Remove user from connected users map
         });
     });
 
-   
 };
 
 // Function to retrieve socketId based on userId

@@ -20,16 +20,20 @@ export default function Home() {
             email: user.email,
             id : user._id
           });
+    
         })
         .catch((error) => {
           setError("Error fetching user details");
-         
         //  window.location.href = ('/login')
           console.error("Error fetching user details:", error);
           
         });
     }
   }, [userDetail, setUserDetail]);
+
+  useEffect(()=>{
+    console.log('Userdetail',userDetail)
+  },[userDetail])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-8">
