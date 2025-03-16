@@ -337,7 +337,20 @@ const handleFileChange = (e) => {
 
                 <div>
                     Notifications:
-                    {notifications && notifications.length > 0 ?(<h1>HI</h1>):(<h2>Bye</h2>) }
+                    {notifications && notifications.length > 0 ?(
+                        <ul className = "space-y-2">
+                            {notifications.map((notification)=>(
+                                <li>
+                                    {notification}
+                                </li>
+                            )
+
+                            )}
+                        </ul>
+                    )
+                    
+
+                    :(<h2>Bye</h2>) }
                 </div>
             
             </div>
@@ -352,6 +365,7 @@ const handleFileChange = (e) => {
                         <div className="flex-grow overflow-y-auto border border-gray-300 p-3 rounded-lg bg-white">
                             { messages.length > 0 ? (
                                 messages.map((msg, index) => (
+                                    userDetail &&(
                                     <div 
                                         key={index} 
                                         className={`chat ${msg.sender === userDetail.id ? "chat-end" : "chat-start"} m-4`}
@@ -370,9 +384,9 @@ const handleFileChange = (e) => {
                                         </div>
                                     </div>
                                 ))
-                            ) : (
+                            )) : ((
                                 <p>No messages yet</p>
-                            )}
+                            ))}
                         </div>
 
                     
