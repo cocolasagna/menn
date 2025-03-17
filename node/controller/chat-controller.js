@@ -12,6 +12,9 @@ const multer = require('multer')
 const sendMessageToUser = async (req, res) => {
     const { targetuserid, message } = req.body;
     const userid = req.user.id;
+    const user = new mongoose.Types.ObjectId(userid)
+    console.log('userId',userid)
+   console.log('user',user)
 
     try {
         const targetSocketId = getSocketId(targetuserid);
@@ -56,7 +59,9 @@ const sendMessageToUser = async (req, res) => {
 
 
         //Notifications
-        const newNotifications = `${userid} sent a message`
+        const sender  = await User.findById(user)
+        console.log(sender)
+        const newNotifications = `${sender.name} sent a message`
 
        getIo().to(targetSocketId).emit('newNotifications', newNotifications)
 

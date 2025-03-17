@@ -267,7 +267,7 @@ const handleFileChange = (e) => {
 }
 
     return (
-
+       
         <div className="flex h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-8">
 
             {/* User List */}
@@ -335,10 +335,24 @@ const handleFileChange = (e) => {
                     <p>No groups found</p>
                 )}
 
-                <div>
+                <div className="mt-4 " >
+                    <div className="flex justify-between">
+                    <h2 >
                     Notifications:
-                    {notifications && notifications.length > 0 ?(<h1>HI</h1>):(<h2>Bye</h2>) }
+                    </h2>
+                    <button onClick={() => dispatch(clearNotifications())} className="ml-2 px-4 py-2 rounded  bg-red-200 hover:bg-red-500">x</button>
+                    </div>
+                    {notifications && notifications.length > 0 ?(<ul>{notifications.map((notification ,index)=>(
+                        <li key = {index}>
+                          
+                            {notification}
+                            
+                            
+                        </li>
+                    ))}</ul>):(null) }
                 </div>
+          
+               
             
             </div>
 
@@ -407,12 +421,16 @@ const handleFileChange = (e) => {
                 ) : (
                     <p>Select a user or group to start chatting</p>
                 )}
+                
             </div>
+           
 
             {/* Group Creation Modal */}
             {isModalOpen && <CreateGroupChat users={users} setIsModalOpen={setIsModalOpen} />
 
             }
+        
         </div>
+
     );
 }
