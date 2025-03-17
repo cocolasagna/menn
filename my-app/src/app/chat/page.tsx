@@ -366,6 +366,7 @@ const handleFileChange = (e) => {
                         <div className="flex-grow overflow-y-auto border border-gray-300 p-3 rounded-lg bg-white">
                             { messages.length > 0 ? (
                                 messages.map((msg, index) => (
+                                    userDetail &&(
                                     <div 
                                         key={index} 
                                         className={`chat ${msg.sender === userDetail.id ? "chat-end" : "chat-start"} m-4`}
@@ -384,9 +385,9 @@ const handleFileChange = (e) => {
                                         </div>
                                     </div>
                                 ))
-                            ) : (
+                            )) : ((
                                 <p>No messages yet</p>
-                            )}
+                            ))}
                         </div>
 
                     
